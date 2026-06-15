@@ -1,0 +1,261 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>SibrixVision Pro + AI Diagnostic</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="shell">
+    <div class="screen active" id="s-login">
+      <div class="auth-container">
+        <div class="auth-brand">
+          <div class="brand-logo" style="margin: 0 auto 12px; width: 44px; height: 44px; font-size: 22px;">🛡️</div>
+          <h2>SibrixVision Pro</h2>
+          <p>Secure Enterprise Gateway</p>
+        </div>
+        
+        <div class="auth-form">
+          <div class="input-group">
+            <label>Email</label>
+            <input type="email" id="loginUser" value="" placeholder="you@company.com">
+          </div>
+          <div class="input-group">
+            <label>Password</label>
+            <div class="password-wrapper">
+              <input type="password" id="loginPass" placeholder="Enter password">
+              <button type="button" class="toggle-pass" onclick="togglePasswordVisibility()">👁️</button>
+            </div>
+          </div>
+          
+          <div id="loginError" class="auth-error-msg"></div>
+        
+          <button class="auth-submit-btn" onclick="verifySecureLogin()">
+            🔓 Sign In
+          </button>
+          <p class="auth-hint">Use <strong>sibrix@gmail.co.za</strong> and password <strong>Password</strong> to login now.</p>
+          <div style="margin-top:10px; display:flex; justify-content:center; gap:12px;">
+            <a href="#" onclick="promptRegister(); return false;" style="color:var(--cyan); font-size:12px; text-decoration:none;">Create account</a>
+            <a href="#" onclick="promptResetPassphrase(); return false;" style="color:var(--muted); font-size:12px; text-decoration:none;">Owner: Reset Keyphrase</a>
+          </div>
+        </div>
+        
+        <div class="auth-footer">
+          🔒 AES-256 Bit Local Session Encryption Active
+        </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sbar">
+      <span>9:41</span>
+      <div class="sbar-icons">
+        <svg width="15" height="11" viewBox="0 0 15 11" fill="var(--text)"><rect x="0" y="4" width="3" height="7" rx="1"/><rect x="4" y="2.5" width="3" height="8.5" rx="1"/><rect x="8" y="1" width="3" height="10" rx="1"/><rect x="12" y="0" width="3" height="11" rx="1"/></svg>
+        <svg width="16" height="12" viewBox="0 0 16 12" fill="none" stroke="var(--text)" stroke-width="1.5"><path d="M1 4C3.8 1.3 12.2 1.3 15 4M4 7c2-1.8 6-1.8 8 0M7 10h2" stroke-linecap="round"/></svg>
+        <svg width="22" height="12" viewBox="0 0 22 12" fill="none"><rect x="0.5" y="0.5" width="18" height="11" rx="3.5" stroke="var(--muted)"/><rect x="2" y="2" width="13" height="8" rx="2" fill="var(--green)"/><path d="M20 4v4a2 2 0 000-4z" fill="var(--muted)"/></svg>
+      </div>
+    </div>
+
+    <div class="screen" id="s-home">
+      <div class="brand-bar">
+        <div class="brand-logo">🛡</div>
+        <div>
+          <div class="brand-name">SibrixVision</div>
+        </div>
+        <div class="brand-actions">
+          <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+        <div class="armed-pill" id="armedPill" onclick="toggleArmed()">
+          <div class="radar-container">
+            <div class="radar-sweep"></div>
+            <span id="armedDot" class="armed-dot-core"></span>
+          </div>
+          <span id="armedLabel">Armed</span>
+        </div>
+      </div>
+
+      <div class="body">
+        <div class="stats">
+          <div class="stat-card">
+            <div class="stat-icon">📷</div>
+            <div class="stat-val" style="color:var(--green)">7</div>
+            <div class="stat-lbl">Online</div>
+          </div>
+          <div class="stat-card" style="border-color: rgba(255,68,85,0.2)">
+            <div class="stat-icon">⚠️</div>
+            <div class="stat-val" style="color:var(--amber)">1</div>
+            <div class="stat-lbl">Offline Node</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <span class="card-title">Live channels</span>
+          </div>
+          <div class="cam-grid">
+            <div class="cam-thumb" onclick="showCamDetail('Front Door','Dahua 5MP Full-Colour','outdoor',true)">
+              <div class="cam-noise"></div><div class="scanline"></div>
+              <div class="live-badge"><div class="live-dot"></div>LIVE</div>
+              <div class="cam-name">Front Door</div>
+            </div>
+            
+            <div class="cam-thumb offline-node" onclick="openOfflineDiagnostic('Back Office','Generic PoE Dome')">
+              <div class="offline-static"></div>
+              <div class="offline-cell">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 1l22 22M16.72 11.06A10.94 10.94 0 0119 12.55M5 12.55a10.94 10.94 0 015.17-2.39M10.71 5.05A16 16 0 0122.56 9M1.42 9a15.91 15.91 0 014.7-2.88M8.53 16.11a6 6 0 016.95 0"/></svg>
+                <span class="error-badge">LINK DOWN</span>
+              </div>
+              <div class="cam-name">Back Office [Click to Debug]</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-lbl">System Events</div>
+        <div class="card">
+          <div class="alert-row" style="cursor:pointer" onclick="openOfflineDiagnostic('Back Office','Generic PoE Dome')">
+            <div class="alert-ico" style="background:var(--amber-dim)">🔌</div>
+            <div class="alert-body">
+              <div class="alert-title" style="color:var(--amber)">Node Disconnected</div>
+              <div class="alert-desc">Back Office · No heartbeats received in 5 mins.</div>
+              <div class="alert-time">Just now</div>
+            </div>
+            <span class="badge b-amber">Fix</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="offlineDetail" class="screen-overlay">
+    <div class="topbar" style="border-bottom:0.5px solid var(--border)">
+      <div class="topbar-left">
+        <div class="back-btn" onclick="closeOfflineDiagnostic()">←</div>
+        <div>
+          <div class="page-title" id="offCamName">Back Office</div>
+          <div class="page-sub" id="offCamModel">Generic PoE Dome</div>
+        </div>
+      </div>
+      <span class="badge b-red">OFFLINE</span>
+    </div>
+
+    <div class="cam-full offline-canvas">
+      <div class="offline-static"></div>
+      <div class="scanline" style="animation-duration: 1s; background: linear-gradient(90deg, transparent, rgba(255,170,0,0.15), transparent)"></div>
+      
+      <div class="diagnostic-hud">
+        <div class="hud-alert-title">⚠️ SYSTEM FAULT ANALYSIS</div>
+        <div class="hud-fact-row"><span>DIAGNOSIS:</span> <b style="color:var(--amber)">PING_TIMEOUT / NO_POWER</b></div>
+        <div class="hud-fact-row"><span>LAST SEEN:</span> 18-05-2026 10:27:14</div>
+        <div class="hud-fact-row"><span>PROBABLE CAUSE:</span> Switch port failure, loose RJ45 connector, or utility power loss.</div>
+        <div class="hud-divider"></div>
+        <div class="topology-map">
+          <div class="topo-node node-ok"><span>🌐</span><small>ISP Gateway</small></div>
+          <div class="topo-line line-active"></div>
+          <div class="topo-node node-ok"><span>🎛️</span><small>PoE Switch (P4)</small></div>
+          <div class="topo-line line-broken" id="topoLineBreak"></div>
+          <div class="topo-node node-fault" id="topoTargetNode"><span>📷</span><small>Back Office</small></div>
+        </div>
+        <div class="mini-terminal">
+          <div class="term-head">SYSTEM SHELL (sibrix-diagnostic-v1.0)</div>
+          <div class="term-body" id="terminalOutput">&gt; Ready. Tap diagnostic option below to begin trace...</div>
+        </div>
+        <div class="hud-divider"></div>
+        <div class="hud-alert-title" style="color:var(--cyan)">💡 LOCAL REMEDIES (PRE-SERVICE CHECK)</div>
+        <div class="hud-step">1. Locate PoE Switch & verify Port 4 LED status.</div>
+        <div class="hud-step">2. Power-cycle the port line or unplug connection for 10s.</div>
+        <div class="hud-step">3. Test line stability with an alternate patch device.</div>
+      </div>
+    </div>
+
+    <div class="ai-assistant-panel">
+      <div class="ai-header">
+        <div class="ai-avatar">🧠</div>
+        <div>
+          <h4>Sibrix AI Copilot</h4>
+          <p>Analyzing network paths to hardware node...</p>
+        </div>
+      </div>
+      
+      <div class="ai-chat-space" id="chatSpace">
+        <div class="msg ai">
+          Hello! I noticed the <b>Back Office</b> camera dropped off the local area network network. Before you call support, let's trace the fault path together. Are the status indicator lights completely dark on the back of the camera housing?
+        </div>
+      </div>
+
+      <div class="chat-presets">
+        <button class="chip" onclick="sendUserSimulatedMsg('Yes, the lights are completely dark.')">Yes, completely dark</button>
+        <button class="chip" onclick="sendUserSimulatedMsg('The lights are blinking amber slowly.')">Blinking amber slowly</button>
+        <button class="chip" onclick="sendUserSimulatedMsg('I checked, the cables are plugged in tight.')">Cables are tight</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="camDetail" class="screen-overlay">
+    <div class="topbar" style="border-bottom:0.5px solid var(--border)">
+      <div class="topbar-left">
+        <div class="back-btn" onclick="closeCamDetail()">←</div>
+        <div>
+          <div class="page-title" id="camDetailName">Front Door</div>
+          <div class="page-sub" id="camDetailModel">Dahua 5MP Full-Colour</div>
+        </div>
+      </div>
+      <span class="badge b-green" id="camStatusLabel">LIVE</span>
+    </div>
+
+    <div class="cam-full">
+      <div class="cam-feed-cover"></div>
+      <div class="scanline" style="animation-duration: 1.3s; background: linear-gradient(90deg, transparent, rgba(6,214,218,0.18), transparent)"></div>
+    </div>
+
+    <div class="audio-intercept-console">
+      <div class="intercept-header">
+        <div class="intercept-title">
+          <span class="pulse-audio-dot"></span>
+          <span>🎙️ AI AUDIO INTERCEPT & TRANSLATION</span>
+        </div>
+
+        <select id="targetLanguageSelector" class="lang-dropdown" onchange="processSimulatedTranslation()">
+          <option value="en">Display: English (Default)</option>
+          <option value="xh">Display: isiXhosa</option>
+          <option value="af">Display: Afrikaans</option>
+        </select>
+      </div>
+
+      <div class="audio-wave-container">
+        <div class="wave-bar style-1"></div>
+        <div class="wave-bar style-2"></div>
+        <div class="wave-bar style-3"></div>
+        <div class="wave-bar style-4"></div>
+        <div class="wave-bar style-2"></div>
+        <div class="wave-bar style-1"></div>
+      </div>
+
+      <div class="transcript-box">
+        <div class="transcript-line">
+          <span class="lbl-tag text-amber">RAW AUDIO (DETECTED):</span>
+          <p id="rawAudioTranscript" class="transcript-text">Waiting for ambient audio stream threshold...</p>
+        </div>
+        <div class="transcript-divider"></div>
+        <div class="transcript-line">
+          <span class="lbl-tag text-cyan" id="translatedLabelTag">TRANSLATION (TARGET):</span>
+          <p id="translatedAudioOutput" class="transcript-text italic">System armed. Listening for proximity voice signatures.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="cam-controls">
+      <div class="control-summary">
+        <div class="control-title">Intercept active on feed</div>
+        <div class="control-sub">Simulated threat audio capture in progress</div>
+      </div>
+      <div class="control-actions">
+        <button class="logout-btn" onclick="closeCamDetail()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
