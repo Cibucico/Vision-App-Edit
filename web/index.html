@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#F4F7FC">
+  <meta name="description" content="SibrixVision — CCTV monitoring with call-style alerts, AI diagnostics and live audio translation. Interactive demo by Sibrix Group.">
+  <title>SibrixVision Demo</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%233B6EF8'/><path d='M16 6l8 3v6c0 5-3.4 9-8 11-4.6-2-8-6-8-11V9z' fill='white'/></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <aside class="guide" aria-label="Demo guide">
+    <div class="guide-brand"><span class="logo">🛡</span> SibrixVision</div>
+    <h1>CCTV that calls you when it matters.</h1>
+    <p>Works with Dahua, Hikvision, Reolink, Axis and any RTSP/ONVIF camera. This is an interactive demo with simulated feeds.</p>
+    <ol class="guide-steps">
+      <li><b>Sign in</b> with the demo account (already filled in).</li>
+      <li><button class="link" data-guide="ring">Trigger a motion alert</button>. The phone rings like a call. Accept it to go straight to the live feed and AI audio translation.</li>
+      <li><button class="link" data-guide="diag">Fix an offline camera</button> step by step with the AI Copilot.</li>
+      <li><button class="link" data-guide="add">Add a camera</button>. The RTSP URL is built for each brand.</li>
+    </ol>
+    <button class="ghost-btn" data-guide="reset">↺ Reset demo</button>
+    <div class="guide-foot">Sibrix Group Pty (Ltd) · sibrixgroup.co.za</div>
+  </aside>
+
+  <main id="phone">
+    <!-- LOGIN -->
+    <section id="login" class="view active">
+      <div class="login-wrap">
+        <div class="login-brand">
+          <div class="logo lg">🛡</div>
+          <h2>SibrixVision</h2>
+          <p>Secure monitoring gateway</p>
+        </div>
+        <form id="loginForm" class="form" autocomplete="on" novalidate>
+          <label>Email<input type="email" id="loginEmail" value="sibrix@gmail.co.za" autocomplete="username"></label>
+          <label>Password
+            <span class="pw"><input type="password" id="loginPass" value="Password" autocomplete="current-password"><button type="button" class="pw-toggle" id="pwToggle" aria-label="Show password">Show</button></span>
+          </label>
+          <div class="form-err" id="loginErr" role="alert"></div>
+          <button class="btn primary block" type="submit">Sign in</button>
+          <p class="hint">Demo account: <b>sibrix@gmail.co.za</b> / <b>Password</b></p>
+          <button type="button" class="link center" id="openRegister">Create an account</button>
+        </form>
+        <form id="registerForm" class="form hidden" novalidate>
+          <label>Full name<input type="text" id="regName" placeholder="Your name"></label>
+          <label>Email<input type="email" id="regEmail" placeholder="you@company.co.za"></label>
+          <label>Password<input type="password" id="regPass" placeholder="At least 6 characters"></label>
+          <div class="form-err" id="regErr" role="alert"></div>
+          <button class="btn primary block" type="submit">Create account</button>
+          <button type="button" class="link center" id="backToLogin">Back to sign in</button>
+        </form>
+        <div class="login-foot">🔒 Encrypted session</div>
+      </div>
+    </section>
+
+    <!-- APP SHELL -->
+    <section id="app" class="view">
+      <header class="appbar">
+        <div class="appbar-brand"><span class="logo">🛡</span><div><div class="brand-name">SibrixVision</div><div class="brand-sub" id="siteName">Sibrix Retail · Cape Town</div></div></div>
+        <button class="armed-pill" id="armedPill" aria-pressed="true"><span class="dot"></span><span id="armedLabel">Armed</span></button>
+      </header>
+
+      <div class="tabs-body">
+        <!-- HOME -->
+        <div class="tab active" id="tab-home">
+          <div class="stats" id="stats"></div>
+          <button class="sim-banner" id="simAlertBtn"><span class="ring-ico">📞</span><span><b>Simulate motion alert</b><small>See how the phone rings when a camera spots someone</small></span><span class="chev">›</span></button>
+          <div class="sec-head"><span>Live channels</span><button class="link" data-goto="cams">View all</button></div>
+          <div class="cam-grid" id="homeCams"></div>
+          <div class="sec-head"><span>Recent events</span><button class="link" data-goto="alerts">All alerts</button></div>
+          <div class="card list" id="homeAlerts"></div>
+        </div>
+
+        <!-- CAMERAS -->
+        <div class="tab" id="tab-cams">
+          <div class="sec-head"><span id="camCount">Cameras</span><button class="btn sm" data-action="add-cam">＋ Add camera</button></div>
+          <div class="cam-grid one" id="allCams"></div>
+        </div>
+
+        <!-- ALERTS -->
+        <div class="tab" id="tab-alerts">
+          <div class="sec-head"><span>Alerts</span><button class="link" id="markAllRead">Mark all read</button></div>
+          <div class="chips" id="alertFilters">
+            <button class="chip on" data-f="all">All</button><button class="chip" data-f="critical">Critical</button><button class="chip" data-f="warning">Warning</button><button class="chip" data-f="info">Info</button>
+          </div>
+          <div class="card list" id="alertList"></div>
+          <div class="sec-head"><span>Notification settings</span></div>
+          <div class="card list" id="notifSettings"></div>
+        </div>
+
+        <!-- DEVICES -->
+        <div class="tab" id="tab-devices">
+          <div class="sec-head"><span>Recorder</span></div>
+          <div class="card pad" id="dvrCard"></div>
+          <div class="sec-head"><span>Sensors</span></div>
+          <div class="card list" id="sensorList"></div>
+          <div class="sec-head"><span>Biometric readers</span></div>
+          <div class="card list" id="bioList"></div>
+        </div>
+
+        <!-- USERS -->
+        <div class="tab" id="tab-users">
+          <div class="sec-head"><span>People with access</span></div>
+          <div class="card list" id="userList"></div>
+          <button class="btn ghost block" id="logoutBtn">Sign out</button>
+        </div>
+      </div>
+
+      <nav class="tabbar" id="tabbar">
+        <button data-tab="home" class="on"><span class="ti">⌂</span>Home</button>
+        <button data-tab="cams"><span class="ti">◉</span>Cameras</button>
+        <button data-tab="alerts"><span class="ti">🔔<i class="badge-dot" id="alertBadge"></i></span>Alerts</button>
+        <button data-tab="devices"><span class="ti">⚙</span>Devices</button>
+        <button data-tab="users"><span class="ti">👥</span>Users</button>
+      </nav>
+    </section>
+
+    <!-- CAMERA DETAIL -->
+    <section id="camView" class="overlay" aria-hidden="true">
+      <header class="topbar">
+        <button class="back" data-close="camView" aria-label="Back">←</button>
+        <div class="tb-title"><div id="cvName">Front Door</div><small id="cvModel">Dahua 5MP</small></div>
+        <span class="pill green" id="cvStatus">● LIVE</span>
+      </header>
+      <div class="cv-scroll">
+        <div class="feed big"><canvas id="cvCanvas" width="640" height="400"></canvas><div class="rec-ind hidden" id="recInd">● REC</div></div>
+        <div class="cv-actions">
+          <button class="act" id="actSnap"><span>📸</span>Snapshot</button>
+          <button class="act" id="actRec"><span>⏺</span>Record</button>
+          <button class="act" id="actTalk"><span>🎙</span>Talk</button>
+          <button class="act" id="actSiren"><span>🚨</span>Siren</button>
+        </div>
+        <div class="ptz">
+          <div class="ptz-pad"><button data-ptz="up">▲</button><button data-ptz="left">◀</button><button data-ptz="home">●</button><button data-ptz="right">▶</button><button data-ptz="down">▼</button></div>
+          <div class="cv-meta" id="cvMeta"></div>
+        </div>
+        <div class="card pad intercept" id="interceptCard">
+          <div class="ic-head"><span class="live-dot"></span><b>AI audio intercept &amp; translation</b>
+            <select id="langSel" aria-label="Translation language"><option value="en">English</option><option value="af">Afrikaans</option><option value="orig">Original (isiXhosa)</option></select>
+          </div>
+          <div class="wave" id="wave"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          <div class="tr"><small class="amber">DETECTED SPEECH · isiXhosa · 94% confidence</small><p id="trRaw" class="muted-i">Listening for voices…</p></div>
+          <div class="tr"><small class="blue" id="trLbl">TRANSLATION · ENGLISH</small><p id="trOut" class="muted-i">Waiting for speech…</p></div>
+        </div>
+        <div class="sec-head"><span>Today's timeline</span></div>
+        <div class="timeline" id="timeline"></div>
+      </div>
+    </section>
+
+    <!-- OFFLINE DIAGNOSTIC -->
+    <section id="diagView" class="overlay" aria-hidden="true">
+      <header class="topbar">
+        <button class="back" data-close="diagView" aria-label="Back">←</button>
+        <div class="tb-title"><div id="dgName">Back Office</div><small id="dgModel">Hikvision</small></div>
+        <span class="pill red" id="dgStatus">OFFLINE</span>
+      </header>
+      <div class="diag-hud">
+        <div class="hud-title" id="hudTitle">⚠ FAULT ANALYSIS</div>
+        <div class="hud-row"><span>Diagnosis</span><b id="hudDiag" class="amber">PING_TIMEOUT / NO_POWER</b></div>
+        <div class="hud-row"><span>Last seen</span><b id="hudSeen">—</b></div>
+        <div class="topo">
+          <div class="tn ok"><span>🌐</span><small>Router</small></div><div class="tl ok"></div>
+          <div class="tn ok"><span>🔀</span><small>PoE switch · P4</small></div><div class="tl bad" id="topoLine"></div>
+          <div class="tn bad" id="topoNode"><span>📷</span><small id="topoCam">Back Office</small></div>
+        </div>
+        <pre class="term" id="term">&gt; Ready. Answer the Copilot below to begin trace…</pre>
+      </div>
+      <div class="copilot">
+        <div class="cp-head"><span class="cp-av">🧠</span><div><b>Sibrix AI Copilot</b><small id="cpSub">Tracing network path to camera…</small></div></div>
+        <div class="chat" id="chat"></div>
+        <div class="presets" id="presets"></div>
+      </div>
+    </section>
+
+    <!-- INCOMING CALL-STYLE ALERT -->
+    <section id="callView" class="overlay call" aria-hidden="true" role="alertdialog" aria-label="Incoming security alert">
+      <div class="call-top">
+        <small>SibrixVision · Security alert</small>
+        <h3 id="callTitle">Person detected</h3>
+        <p id="callSub">Front Door · AI confidence 97%</p>
+      </div>
+      <div class="call-feed"><canvas id="callCanvas" width="480" height="300"></canvas><div class="call-pulse"></div></div>
+      <div class="call-actions">
+        <div><button class="call-btn decline" id="callDecline" aria-label="Decline">✕</button><small>Dismiss</small></div>
+        <div><button class="call-btn accept" id="callAccept" aria-label="Accept">📹</button><small>View live</small></div>
+      </div>
+    </section>
+
+    <!-- ADD CAMERA SHEET -->
+    <section id="addView" class="overlay sheet-wrap" aria-hidden="true">
+      <div class="sheet">
+        <div class="sheet-head"><b>Add camera</b><button class="back" data-close="addView" aria-label="Close">✕</button></div>
+        <form id="addForm" class="form" novalidate>
+          <label>Camera name<input id="acName" placeholder="e.g. Loading Bay" required></label>
+          <label>Brand<select id="acBrand"><option value="dahua">Dahua</option><option value="hikvision">Hikvision</option><option value="reolink">Reolink</option><option value="axis">Axis</option><option value="onvif">Other / ONVIF</option></select></label>
+          <div class="row2"><label>IP address<input id="acIp" value="192.168.1.109" inputmode="decimal"></label><label>Type<select id="acType"><option value="outdoor">Outdoor</option><option value="indoor">Indoor</option></select></label></div>
+          <div class="row2"><label>Username<input id="acUser" value="admin"></label><label>Password<input id="acPass" type="password" value="sibrix123"></label></div>
+          <div class="rtsp"><small>Generated stream URL</small><code id="acUrl"></code></div>
+          <div class="form-err" id="acErr" role="alert"></div>
+          <button class="btn primary block" type="submit" id="acSubmit">Test &amp; connect</button>
+        </form>
+      </div>
+    </section>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

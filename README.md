@@ -135,16 +135,19 @@ npx react-native-asset
 
 ---
 
-## Web Prototype Summary
+## Web Demo (live on Vercel)
 
-The repository root now includes a standalone web preview for the SibrixVision UI:
-- `index.html` — AI diagnostics interface with live camera tiles and offline node analysis
-- `style.css` — white/light-blue theme with red warning and green normal state accents
-- `script.js` — interactive offline diagnostic overlay, AI chat simulation, and camera detail controls
+`web/` holds a self-contained, interactive web demo of SibrixVision (plain HTML/CSS/JS, no build step):
+- `web/index.html`: the app shell: login, Home, Cameras, Alerts, Devices and Users tabs
+- `web/style.css`: light theme, phone frame on desktop, full-screen on mobile
+- `web/app.js`: simulated CCTV feeds (canvas), call-style incoming alert with ringtone, live view (snapshot, record, talk, siren, PTZ), AI audio translation, AI Copilot offline-camera diagnostic, add-camera flow with per-brand RTSP URLs, users and permissions
 
-This preview is ideal for quick design validation and demoing the new visual workflow without launching the full React Native app.
+Demo login: **sibrix@gmail.co.za** / **Password** (already filled in).
 
-> To view it instantly, open `index.html` in a browser.
+Run locally: open `web/index.html` in a browser, or `npx serve web`.
+Deploy: `vercel --prod` from the repo root (`vercel.json` serves `web/` as a static site and skips installing the React Native dependencies).
+
+All feeds and data in the web demo are simulated. Live camera streams need the RTSP → HLS backend described below.
 
 ---
 
